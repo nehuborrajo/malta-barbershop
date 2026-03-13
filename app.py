@@ -388,6 +388,8 @@ def get_metricas():
         'turnos_por_estado': [dict(t) for t in turnos_stats]
     })
 
+# Inicializar DB siempre (necesario para gunicorn)
+init_db()
+
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True, port=5000)

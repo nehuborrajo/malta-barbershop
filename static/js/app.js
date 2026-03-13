@@ -47,12 +47,20 @@ function isToday(date) {
 
 // API calls
 async function api(endpoint, options = {}) {
-    const response = await fetch(`/api${endpoint}`, {
-        headers: { 'Content-Type': 'application/json' },
-        ...options,
-        body: options.body ? JSON.stringify(options.body) : undefined
-    });
-    return response.json();
+    try {
+        const response = await fetch(`/api${endpoint}`, {
+            headers: { 'Content-Type': 'application/json' },
+            ...options,
+            body: options.body ? JSON.stringify(options.body) : undefined
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    } catch (error) {
+        console.error('API Error:', endpoint, error);
+        throw error;
+    }
 }
 
 // Cargar servicios
@@ -570,17 +578,21 @@ async function cancelarTurno(id) {
 
 // Inicialización
 document.addEventListener('DOMContentLoaded', async () => {
-    // Cargar servicios inicialmente
-    await loadServicios();
+    try {
+        // Cargar servicios inicialmente
+        await loadServicios();
 
-    // Setear fechas por defecto en filtros
-    const today = new Date();
-    const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        // Setear fechas por defecto en filtros
+        const today = new Date();
+        const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-    document.getElementById('filtro-fecha-inicio').value = formatDate(firstOfMonth);
-    document.getElementById('filtro-fecha-fin').value = formatDate(today);
-    document.getElementById('metricas-fecha-inicio').value = formatDate(firstOfMonth);
-    document.getElementById('metricas-fecha-fin').value = formatDate(today);
+        document.getElementById('filtro-fecha-inicio').value = formatDate(firstOfMonth);
+        document.getElementById('filtro-fecha-fin').value = formatDate(today);
+        document.getElementById('metricas-fecha-inicio').value = formatDate(firstOfMonth);
+        document.getElementById('metricas-fecha-fin').value = formatDate(today);
 
-    loadAgenda();
+        await loadAgenda();
+    } catch (error) {
+        console.error('Error en inicialización:', error);
+    }
 });
