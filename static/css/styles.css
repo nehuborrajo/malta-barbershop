@@ -1,0 +1,741 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-600: #4b5563;
+    --gray-800: #1f2937;
+    --white: #ffffff;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--gray-100);
+    color: var(--gray-800);
+    min-height: 100vh;
+}
+
+.app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-bottom: 80px;
+}
+
+/* Navegación */
+.nav-bar {
+    background: var(--white);
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 0.75rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.nav-btn {
+    background: var(--gray-100);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.nav-btn:hover {
+    background: var(--gray-200);
+}
+
+.nav-btn.active {
+    background: var(--primary);
+    color: var(--white);
+}
+
+/* Secciones */
+.section {
+    display: none;
+    padding: 1rem;
+}
+
+.section.active {
+    display: block;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.section-header h2 {
+    font-size: 1.25rem;
+}
+
+/* Botones */
+.btn-primary {
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.btn-secondary {
+    background: var(--gray-200);
+    color: var(--gray-800);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+    background: var(--gray-300);
+}
+
+.btn-full {
+    width: 100%;
+}
+
+.btn-small {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+}
+
+.btn-success {
+    background: var(--success);
+    color: var(--white);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: var(--white);
+}
+
+/* Toggle de vista */
+.view-toggle {
+    display: flex;
+    gap: 0.25rem;
+    background: var(--gray-200);
+    padding: 0.25rem;
+    border-radius: 8px;
+}
+
+.toggle-btn {
+    background: transparent;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.toggle-btn.active {
+    background: var(--white);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Navegación de fecha */
+.date-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.date-btn {
+    background: var(--gray-200);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+#current-date-display {
+    font-size: 1.1rem;
+    font-weight: 600;
+    min-width: 180px;
+    text-align: center;
+}
+
+/* Opciones de agenda */
+.agenda-options {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0.5rem 0;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--gray-600);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* Agenda */
+.agenda-container {
+    margin-top: 1rem;
+}
+
+.turno-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.turno-info {
+    flex: 1;
+}
+
+.turno-horario {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    margin-bottom: 0.25rem;
+}
+
+.turno-cliente {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.turno-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+}
+
+.badge-fijo {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-completado {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-cancelado {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.turno-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Lista container */
+.lista-container {
+    margin-top: 1rem;
+}
+
+.lista-item {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.lista-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.lista-item-title {
+    font-weight: 600;
+}
+
+.lista-item-subtitle {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+}
+
+/* Filtros */
+.filtros {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.input-field {
+    padding: 0.6rem;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    flex: 1;
+    min-width: 120px;
+}
+
+/* Métricas */
+.metricas-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.metrica-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.metrica-label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    margin-bottom: 0.5rem;
+}
+
+.metrica-valor {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.metricas-detalle {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.metricas-detalle h3 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.stats-container {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    background: var(--gray-100);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.chart-container {
+    min-height: 100px;
+}
+
+.chart-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.chart-bar-label {
+    width: 80px;
+    font-size: 0.8rem;
+    color: var(--gray-600);
+}
+
+.chart-bar-fill {
+    height: 24px;
+    background: var(--primary);
+    border-radius: 4px;
+    min-width: 4px;
+    display: flex;
+    align-items: center;
+    padding-left: 0.5rem;
+}
+
+.chart-bar-value {
+    font-size: 0.8rem;
+    color: var(--white);
+    white-space: nowrap;
+}
+
+/* Modales */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--white);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.modal-header h3 {
+    font-size: 1.1rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--gray-600);
+}
+
+.form-group {
+    padding: 0 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-group:first-of-type {
+    margin-top: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--gray-600);
+}
+
+.form-group .input-field {
+    width: 100%;
+}
+
+form .btn-primary {
+    margin: 1rem;
+    width: calc(100% - 2rem);
+}
+
+/* Día de la semana en agenda semanal */
+.day-header {
+    background: var(--gray-200);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+/* Vista semanal estilo grilla (Teams/Outlook) */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: 60px repeat(7, 1fr);
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.calendar-header {
+    display: contents;
+}
+
+.calendar-header-cell {
+    background: var(--primary);
+    color: var(--white);
+    padding: 0.75rem 0.25rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border-right: 1px solid rgba(255,255,255,0.2);
+}
+
+.calendar-header-cell:first-child {
+    background: var(--gray-200);
+    color: var(--gray-600);
+}
+
+.calendar-header-cell.today {
+    background: var(--success);
+}
+
+.calendar-header-cell .day-name {
+    display: block;
+    font-size: 0.7rem;
+    opacity: 0.9;
+}
+
+.calendar-header-cell .day-number {
+    display: block;
+    font-size: 1.1rem;
+    margin-top: 0.15rem;
+}
+
+.calendar-body {
+    display: contents;
+}
+
+.calendar-row {
+    display: contents;
+}
+
+.calendar-time {
+    background: var(--gray-100);
+    padding: 0.5rem 0.25rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    border-bottom: 1px solid var(--gray-200);
+    border-right: 1px solid var(--gray-200);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 60px;
+}
+
+.calendar-cell {
+    border-bottom: 1px solid var(--gray-200);
+    border-right: 1px solid var(--gray-200);
+    padding: 0.25rem;
+    min-height: 60px;
+    position: relative;
+    background: var(--white);
+}
+
+.calendar-cell:hover {
+    background: var(--gray-100);
+}
+
+.calendar-cell.today {
+    background: #f0fdf4;
+}
+
+.grid-turno {
+    background: var(--primary);
+    color: var(--white);
+    border-radius: 4px;
+    padding: 0.25rem 0.35rem;
+    font-size: 0.7rem;
+    margin-bottom: 0.2rem;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.grid-turno:hover {
+    opacity: 0.9;
+}
+
+.grid-turno.completado {
+    background: var(--success);
+}
+
+.grid-turno.cancelado {
+    background: var(--gray-300);
+    color: var(--gray-600);
+    text-decoration: line-through;
+}
+
+.grid-turno-client {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.grid-turno-service {
+    font-size: 0.6rem;
+    opacity: 0.9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.grid-turno-actions {
+    display: none;
+    gap: 0.2rem;
+    margin-top: 0.25rem;
+}
+
+.grid-turno:hover .grid-turno-actions {
+    display: flex;
+}
+
+.grid-turno-actions button {
+    flex: 1;
+    padding: 0.15rem 0.25rem;
+    font-size: 0.6rem;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.3);
+    color: var(--white);
+}
+
+.grid-turno-actions button:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+/* Precios */
+.precio-item {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.precio-nombre {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.precio-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.precio-input {
+    width: 100px;
+    padding: 0.5rem;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    font-size: 1rem;
+    text-align: right;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--gray-600);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .calendar-grid {
+        grid-template-columns: 45px repeat(7, 1fr);
+        font-size: 0.7rem;
+    }
+
+    .calendar-header-cell {
+        padding: 0.5rem 0.15rem;
+        font-size: 0.65rem;
+    }
+
+    .calendar-header-cell .day-number {
+        font-size: 0.9rem;
+    }
+
+    .calendar-time {
+        font-size: 0.65rem;
+        padding: 0.25rem;
+    }
+
+    .calendar-cell {
+        min-height: 50px;
+        padding: 0.15rem;
+    }
+
+    .grid-turno {
+        font-size: 0.6rem;
+        padding: 0.2rem;
+    }
+
+    .grid-turno-actions {
+        display: flex;
+        margin-top: 0.15rem;
+    }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .nav-links {
+        gap: 0.25rem;
+    }
+
+    .nav-btn {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.8rem;
+    }
+
+    .metricas-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .turno-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .turno-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}

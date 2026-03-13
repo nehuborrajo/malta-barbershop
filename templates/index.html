@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malta BarberShop - Gestión de Turnos</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navegación -->
+        <nav class="nav-bar">
+            <div class="nav-brand">✂️ Malta BarberShop</div>
+            <div class="nav-links">
+                <button class="nav-btn active" data-section="agenda">📅 Agenda</button>
+                <button class="nav-btn" data-section="turnos-fijos">📌 Fijos</button>
+                <button class="nav-btn" data-section="precios">💈 Precios</button>
+                <button class="nav-btn" data-section="pagos">💰 Pagos</button>
+                <button class="nav-btn" data-section="metricas">📊 Métricas</button>
+            </div>
+        </nav>
+
+        <!-- Sección Agenda -->
+        <section id="agenda" class="section active">
+            <div class="section-header">
+                <h2>Agenda</h2>
+                <div class="view-toggle">
+                    <button class="toggle-btn active" data-view="diaria">Día</button>
+                    <button class="toggle-btn" data-view="semanal">Semana</button>
+                </div>
+            </div>
+
+            <div class="date-nav">
+                <button id="prev-date" class="date-btn">◀</button>
+                <span id="current-date-display"></span>
+                <button id="next-date" class="date-btn">▶</button>
+                <button id="today-btn" class="btn-secondary">Hoy</button>
+            </div>
+
+            <div class="agenda-options">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="mostrar-domingo">
+                    <span>Mostrar Domingo</span>
+                </label>
+            </div>
+
+            <button id="btn-nuevo-turno" class="btn-primary btn-full">+ Nuevo Turno</button>
+
+            <div id="agenda-container" class="agenda-container">
+                <!-- Turnos se cargan dinámicamente -->
+            </div>
+        </section>
+
+        <!-- Sección Turnos Fijos -->
+        <section id="turnos-fijos" class="section">
+            <div class="section-header">
+                <h2>Turnos Fijos</h2>
+            </div>
+
+            <button id="btn-nuevo-fijo" class="btn-primary btn-full">+ Nuevo Turno Fijo</button>
+
+            <div id="lista-fijos" class="lista-container">
+                <!-- Turnos fijos se cargan dinámicamente -->
+            </div>
+        </section>
+
+        <!-- Sección Precios -->
+        <section id="precios" class="section">
+            <div class="section-header">
+                <h2>Precios de Servicios</h2>
+            </div>
+
+            <div id="lista-precios" class="lista-container">
+                <!-- Precios se cargan dinámicamente -->
+            </div>
+        </section>
+
+        <!-- Sección Pagos -->
+        <section id="pagos" class="section">
+            <div class="section-header">
+                <h2>Historial de Pagos</h2>
+            </div>
+
+            <div class="filtros">
+                <input type="date" id="filtro-fecha-inicio" class="input-field">
+                <input type="date" id="filtro-fecha-fin" class="input-field">
+                <select id="filtro-medio" class="input-field">
+                    <option value="">Todos</option>
+                    <option value="efectivo">Efectivo</option>
+                    <option value="transferencia">Transferencia</option>
+                    <option value="mercadopago">Mercado Pago</option>
+                </select>
+                <button id="btn-filtrar-pagos" class="btn-secondary">Filtrar</button>
+            </div>
+
+            <div id="lista-pagos" class="lista-container">
+                <!-- Pagos se cargan dinámicamente -->
+            </div>
+        </section>
+
+        <!-- Sección Métricas -->
+        <section id="metricas" class="section">
+            <div class="section-header">
+                <h2>Métricas</h2>
+            </div>
+
+            <div class="filtros">
+                <input type="date" id="metricas-fecha-inicio" class="input-field">
+                <input type="date" id="metricas-fecha-fin" class="input-field">
+                <button id="btn-cargar-metricas" class="btn-secondary">Ver Métricas</button>
+            </div>
+
+            <div class="metricas-grid">
+                <div class="metrica-card">
+                    <span class="metrica-label">Total Ingresos</span>
+                    <span id="metrica-total" class="metrica-valor">$0</span>
+                </div>
+                <div class="metrica-card">
+                    <span class="metrica-label">Efectivo</span>
+                    <span id="metrica-efectivo" class="metrica-valor">$0</span>
+                </div>
+                <div class="metrica-card">
+                    <span class="metrica-label">Transferencia</span>
+                    <span id="metrica-transferencia" class="metrica-valor">$0</span>
+                </div>
+                <div class="metrica-card">
+                    <span class="metrica-label">Mercado Pago</span>
+                    <span id="metrica-mercadopago" class="metrica-valor">$0</span>
+                </div>
+            </div>
+
+            <div class="metricas-detalle">
+                <h3>Turnos</h3>
+                <div id="turnos-stats" class="stats-container"></div>
+            </div>
+
+            <div class="metricas-detalle">
+                <h3>Ingresos por Día</h3>
+                <div id="ingresos-por-dia" class="chart-container"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal Nuevo Turno -->
+    <div id="modal-turno" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-turno-titulo">Nuevo Turno</h3>
+                <button class="modal-close" data-modal="modal-turno">&times;</button>
+            </div>
+            <form id="form-turno">
+                <input type="hidden" id="turno-id">
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <input type="text" id="turno-cliente" class="input-field" required>
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Servicio</label>
+                    <select id="turno-tipo" class="input-field" required>
+                        <!-- Se carga dinámicamente -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="date" id="turno-fecha" class="input-field" required>
+                </div>
+                <div class="form-group">
+                    <label>Horario</label>
+                    <select id="turno-horario" class="input-field" required>
+                        <!-- Se carga dinámicamente -->
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary btn-full">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Turno Fijo -->
+    <div id="modal-fijo" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-fijo-titulo">Nuevo Turno Fijo</h3>
+                <button class="modal-close" data-modal="modal-fijo">&times;</button>
+            </div>
+            <form id="form-fijo">
+                <input type="hidden" id="fijo-id">
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <input type="text" id="fijo-cliente" class="input-field" required>
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Servicio</label>
+                    <select id="fijo-tipo" class="input-field" required>
+                        <!-- Se carga dinámicamente -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Día de la semana</label>
+                    <select id="fijo-dia" class="input-field" required>
+                        <option value="0">Lunes</option>
+                        <option value="1">Martes</option>
+                        <option value="2">Miércoles</option>
+                        <option value="3">Jueves</option>
+                        <option value="4">Viernes</option>
+                        <option value="5">Sábado</option>
+                        <option value="6">Domingo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Horario</label>
+                    <select id="fijo-horario" class="input-field" required>
+                        <!-- Se carga dinámicamente -->
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary btn-full">Guardar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Completar Turno (Pago) -->
+    <div id="modal-pago" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Registrar Pago</h3>
+                <button class="modal-close" data-modal="modal-pago">&times;</button>
+            </div>
+            <form id="form-pago">
+                <input type="hidden" id="pago-turno-id">
+                <input type="hidden" id="pago-monto-sugerido">
+                <div class="form-group">
+                    <label>Servicio</label>
+                    <input type="text" id="pago-servicio" class="input-field" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Monto</label>
+                    <input type="number" id="pago-monto" class="input-field" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Medio de Pago</label>
+                    <select id="pago-medio" class="input-field" required>
+                        <option value="efectivo">Efectivo</option>
+                        <option value="transferencia">Transferencia</option>
+                        <option value="mercadopago">Mercado Pago</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary btn-full">Confirmar Pago</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
