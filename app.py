@@ -2,8 +2,6 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from datetime import datetime, timedelta
 import os
-import psycopg2
-from psycopg2.extras import RealDictCursor
 
 app = Flask(__name__)
 CORS(app)
@@ -15,6 +13,8 @@ def get_db():
     """Obtener conexión a la base de datos."""
     if DATABASE_URL:
         # PostgreSQL (producción)
+        import psycopg2
+        from psycopg2.extras import RealDictCursor
         conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     else:
         # SQLite (desarrollo local)

@@ -5,24 +5,39 @@
 }
 
 :root {
-    --primary: #2563eb;
-    --primary-dark: #1d4ed8;
-    --success: #22c55e;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --gray-100: #f3f4f6;
-    --gray-200: #e5e7eb;
-    --gray-300: #d1d5db;
-    --gray-600: #4b5563;
-    --gray-800: #1f2937;
-    --white: #ffffff;
+    /* Dominio: Barbería */
+    --lather: #F8F6F1;        /* Espuma - fondo base */
+    --parchment: #FFFFFF;     /* Cards elevadas */
+    --leather: #8B4513;       /* Cuero - acento principal */
+    --leather-dark: #6B3410;  /* Cuero hover */
+    --chrome: #A0A0A0;        /* Herramientas - bordes */
+    --charcoal: #1C1C1C;      /* Capa de corte - texto principal */
+    --charcoal-soft: #4A4A4A; /* Texto secundario */
+    --charcoal-muted: #7A7A7A;/* Texto terciario */
+
+    /* Semánticos */
+    --pole-red: #B22234;      /* Poste - peligro/cancelar */
+    --pole-red-soft: #FEE8EA;
+    --sage: #2D5A27;          /* Verde barbería - éxito/pagado */
+    --sage-soft: #E8F0E7;
+    --amber: #C67C00;         /* Ámbar - advertencia */
+    --amber-soft: #FFF3E0;
+
+    /* Bordes */
+    --border: rgba(139, 69, 19, 0.12);
+    --border-strong: rgba(139, 69, 19, 0.25);
+
+    /* Elevación */
+    --shadow-sm: 0 1px 2px rgba(28, 28, 28, 0.04);
+    --shadow-md: 0 2px 8px rgba(28, 28, 28, 0.06);
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: var(--gray-100);
-    color: var(--gray-800);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--lather);
+    color: var(--charcoal);
     min-height: 100vh;
+    line-height: 1.5;
 }
 
 .app-container {
@@ -31,21 +46,25 @@ body {
     padding-bottom: 80px;
 }
 
-/* Navegación */
+/* ========================================
+   Navegación
+   ======================================== */
 .nav-bar {
-    background: var(--white);
-    padding: 1rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: var(--parchment);
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
     z-index: 100;
 }
 
 .nav-brand {
-    font-size: 1.5rem;
-    font-weight: bold;
+    font-size: 1.25rem;
+    font-weight: 700;
     text-align: center;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.875rem;
+    color: var(--charcoal);
+    letter-spacing: -0.02em;
 }
 
 .nav-links {
@@ -56,28 +75,35 @@ body {
 }
 
 .nav-btn {
-    background: var(--gray-100);
-    border: none;
+    background: transparent;
+    border: 1px solid var(--border);
     padding: 0.5rem 1rem;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.2s;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--charcoal-soft);
+    transition: all 0.15s ease;
 }
 
 .nav-btn:hover {
-    background: var(--gray-200);
+    background: var(--lather);
+    border-color: var(--border-strong);
+    color: var(--charcoal);
 }
 
 .nav-btn.active {
-    background: var(--primary);
-    color: var(--white);
+    background: var(--leather);
+    border-color: var(--leather);
+    color: var(--parchment);
 }
 
-/* Secciones */
+/* ========================================
+   Secciones
+   ======================================== */
 .section {
     display: none;
-    padding: 1rem;
+    padding: 1.5rem;
 }
 
 .section.active {
@@ -88,42 +114,49 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
 }
 
 .section-header h2 {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
 }
 
-/* Botones */
+/* ========================================
+   Botones
+   ======================================== */
 .btn-primary {
-    background: var(--primary);
-    color: var(--white);
+    background: var(--leather);
+    color: var(--parchment);
     border: none;
     padding: 0.75rem 1.5rem;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 1rem;
-    transition: background 0.2s;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    transition: background 0.15s ease;
 }
 
 .btn-primary:hover {
-    background: var(--primary-dark);
+    background: var(--leather-dark);
 }
 
 .btn-secondary {
-    background: var(--gray-200);
-    color: var(--gray-800);
-    border: none;
+    background: var(--parchment);
+    color: var(--charcoal);
+    border: 1px solid var(--border-strong);
     padding: 0.5rem 1rem;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: background 0.2s;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
 }
 
 .btn-secondary:hover {
-    background: var(--gray-300);
+    background: var(--lather);
+    border-color: var(--chrome);
 }
 
 .btn-full {
@@ -131,70 +164,102 @@ body {
 }
 
 .btn-small {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.8rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
 }
 
 .btn-success {
-    background: var(--success);
-    color: var(--white);
+    background: var(--sage);
+    border-color: var(--sage);
+    color: var(--parchment);
+}
+
+.btn-success:hover {
+    background: #245020;
 }
 
 .btn-danger {
-    background: var(--danger);
-    color: var(--white);
+    background: var(--pole-red);
+    border-color: var(--pole-red);
+    color: var(--parchment);
 }
 
-/* Toggle de vista */
+.btn-danger:hover {
+    background: #8B1A29;
+}
+
+/* ========================================
+   Toggle de vista
+   ======================================== */
 .view-toggle {
     display: flex;
-    gap: 0.25rem;
-    background: var(--gray-200);
-    padding: 0.25rem;
-    border-radius: 8px;
+    gap: 2px;
+    background: var(--lather);
+    padding: 3px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
 }
 
 .toggle-btn {
     background: transparent;
     border: none;
-    padding: 0.4rem 0.8rem;
-    border-radius: 6px;
+    padding: 0.375rem 0.75rem;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--charcoal-soft);
+    transition: all 0.15s ease;
 }
 
 .toggle-btn.active {
-    background: var(--white);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    background: var(--parchment);
+    color: var(--charcoal);
+    box-shadow: var(--shadow-sm);
 }
 
-/* Navegación de fecha */
+/* ========================================
+   Navegación de fecha
+   ======================================== */
 .date-nav {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 1rem;
-    margin: 1rem 0;
+    margin: 1.25rem 0;
 }
 
 .date-btn {
-    background: var(--gray-200);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    background: var(--parchment);
+    border: 1px solid var(--border);
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.875rem;
+    color: var(--charcoal-soft);
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.date-btn:hover {
+    border-color: var(--border-strong);
+    color: var(--charcoal);
 }
 
 #current-date-display {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     min-width: 180px;
     text-align: center;
+    color: var(--charcoal);
 }
 
-/* Opciones de agenda */
+/* ========================================
+   Opciones de agenda
+   ======================================== */
 .agenda-options {
     display: flex;
     justify-content: flex-end;
@@ -206,30 +271,38 @@ body {
     align-items: center;
     gap: 0.5rem;
     cursor: pointer;
-    font-size: 0.9rem;
-    color: var(--gray-600);
+    font-size: 0.875rem;
+    color: var(--charcoal-soft);
 }
 
 .checkbox-label input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     cursor: pointer;
+    accent-color: var(--leather);
 }
 
-/* Agenda */
+/* ========================================
+   Agenda - Cards de turno
+   ======================================== */
 .agenda-container {
     margin-top: 1rem;
 }
 
 .turno-card {
-    background: var(--white);
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 0.75rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background: var(--parchment);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.625rem;
+    border: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: border-color 0.15s ease;
+}
+
+.turno-card:hover {
+    border-color: var(--border-strong);
 }
 
 .turno-info {
@@ -237,36 +310,41 @@ body {
 }
 
 .turno-horario {
-    font-size: 0.85rem;
-    color: var(--gray-600);
-    margin-bottom: 0.25rem;
+    font-size: 0.8125rem;
+    color: var(--charcoal-muted);
+    margin-bottom: 0.125rem;
+    font-weight: 500;
 }
 
 .turno-cliente {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
+    color: var(--charcoal);
 }
 
 .turno-badge {
-    font-size: 0.7rem;
-    padding: 0.2rem 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 0.1875rem 0.5rem;
     border-radius: 4px;
     margin-left: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
 }
 
 .badge-fijo {
-    background: #dbeafe;
-    color: #1e40af;
+    background: var(--amber-soft);
+    color: var(--amber);
 }
 
 .badge-completado {
-    background: #dcfce7;
-    color: #166534;
+    background: var(--sage-soft);
+    color: var(--sage);
 }
 
 .badge-cancelado {
-    background: #fee2e2;
-    color: #991b1b;
+    background: var(--pole-red-soft);
+    color: var(--pole-red);
 }
 
 .turno-actions {
@@ -274,105 +352,131 @@ body {
     gap: 0.5rem;
 }
 
-/* Lista container */
+/* ========================================
+   Lista container
+   ======================================== */
 .lista-container {
     margin-top: 1rem;
 }
 
 .lista-item {
-    background: var(--white);
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 0.75rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background: var(--parchment);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.625rem;
+    border: 1px solid var(--border);
 }
 
 .lista-item-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.375rem;
 }
 
 .lista-item-title {
     font-weight: 600;
+    color: var(--charcoal);
 }
 
 .lista-item-subtitle {
-    color: var(--gray-600);
-    font-size: 0.9rem;
+    color: var(--charcoal-soft);
+    font-size: 0.875rem;
 }
 
-/* Filtros */
+/* ========================================
+   Filtros
+   ======================================== */
 .filtros {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
-    margin-bottom: 1rem;
+    margin-bottom: 1.25rem;
 }
 
 .input-field {
-    padding: 0.6rem;
-    border: 1px solid var(--gray-300);
-    border-radius: 8px;
-    font-size: 0.9rem;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    font-size: 0.875rem;
     flex: 1;
     min-width: 120px;
+    background: var(--parchment);
+    color: var(--charcoal);
+    transition: border-color 0.15s ease;
 }
 
-/* Métricas */
+.input-field:focus {
+    outline: none;
+    border-color: var(--leather);
+}
+
+/* ========================================
+   Métricas
+   ======================================== */
 .metricas-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 1rem;
     margin-bottom: 1.5rem;
 }
 
 .metrica-card {
-    background: var(--white);
-    border-radius: 12px;
-    padding: 1rem;
-    text-align: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background: var(--parchment);
+    border-radius: 8px;
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+}
+
+.metrica-card:first-child {
+    border-left: 3px solid var(--leather);
 }
 
 .metrica-label {
     display: block;
-    font-size: 0.85rem;
-    color: var(--gray-600);
-    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--charcoal-muted);
+    margin-bottom: 0.375rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .metrica-valor {
     font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--primary);
+    font-weight: 700;
+    color: var(--charcoal);
+    letter-spacing: -0.02em;
 }
 
 .metricas-detalle {
-    background: var(--white);
-    border-radius: 12px;
-    padding: 1rem;
+    background: var(--parchment);
+    border-radius: 8px;
+    padding: 1.25rem;
     margin-bottom: 1rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border: 1px solid var(--border);
 }
 
 .metricas-detalle h3 {
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin-bottom: 0.875rem;
+    color: var(--charcoal);
 }
 
 .stats-container {
     display: flex;
-    gap: 1rem;
+    gap: 0.75rem;
     flex-wrap: wrap;
 }
 
 .stat-item {
-    background: var(--gray-100);
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 0.9rem;
+    background: var(--lather);
+    padding: 0.5rem 0.875rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    color: var(--charcoal-soft);
+    border: 1px solid var(--border);
 }
 
 .chart-container {
@@ -386,28 +490,32 @@ body {
 }
 
 .chart-bar-label {
-    width: 80px;
-    font-size: 0.8rem;
-    color: var(--gray-600);
+    width: 70px;
+    font-size: 0.8125rem;
+    color: var(--charcoal-muted);
+    font-weight: 500;
 }
 
 .chart-bar-fill {
-    height: 24px;
-    background: var(--primary);
+    height: 28px;
+    background: var(--leather);
     border-radius: 4px;
     min-width: 4px;
     display: flex;
     align-items: center;
-    padding-left: 0.5rem;
+    padding-left: 0.625rem;
 }
 
 .chart-bar-value {
-    font-size: 0.8rem;
-    color: var(--white);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--parchment);
     white-space: nowrap;
 }
 
-/* Modales */
+/* ========================================
+   Modales
+   ======================================== */
 .modal {
     display: none;
     position: fixed;
@@ -415,11 +523,12 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.5);
+    background: rgba(28, 28, 28, 0.4);
     z-index: 200;
     align-items: center;
     justify-content: center;
     padding: 1rem;
+    backdrop-filter: blur(2px);
 }
 
 .modal.active {
@@ -427,48 +536,60 @@ body {
 }
 
 .modal-content {
-    background: var(--white);
-    border-radius: 16px;
+    background: var(--parchment);
+    border-radius: 12px;
     width: 100%;
     max-width: 400px;
     max-height: 90vh;
     overflow-y: auto;
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 32px rgba(28, 28, 28, 0.12);
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem;
-    border-bottom: 1px solid var(--gray-200);
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--border);
 }
 
 .modal-header h3 {
-    font-size: 1.1rem;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--charcoal);
 }
 
 .modal-close {
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     cursor: pointer;
-    color: var(--gray-600);
+    color: var(--charcoal-muted);
+    padding: 0.25rem;
+    line-height: 1;
+    transition: color 0.15s ease;
+}
+
+.modal-close:hover {
+    color: var(--charcoal);
 }
 
 .form-group {
-    padding: 0 1rem;
+    padding: 0 1.25rem;
     margin-bottom: 1rem;
 }
 
 .form-group:first-of-type {
-    margin-top: 1rem;
+    margin-top: 1.25rem;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-    color: var(--gray-600);
+    margin-bottom: 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--charcoal-soft);
 }
 
 .form-group .input-field {
@@ -476,26 +597,33 @@ body {
 }
 
 form .btn-primary {
-    margin: 1rem;
-    width: calc(100% - 2rem);
+    margin: 1.25rem;
+    width: calc(100% - 2.5rem);
 }
 
-/* Día de la semana en agenda semanal */
+/* ========================================
+   Día header (vista diaria agrupada)
+   ======================================== */
 .day-header {
-    background: var(--gray-200);
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
+    background: var(--lather);
+    padding: 0.625rem 1rem;
+    border-radius: 6px;
     margin-bottom: 0.5rem;
     font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--charcoal-soft);
+    border: 1px solid var(--border);
 }
 
-/* Vista semanal estilo grilla (Teams/Outlook) */
+/* ========================================
+   Vista semanal - Grilla calendario
+   ======================================== */
 .calendar-grid {
     display: grid;
-    grid-template-columns: 60px repeat(7, 1fr);
-    background: var(--white);
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    grid-template-columns: 56px repeat(7, 1fr);
+    background: var(--parchment);
+    border-radius: 8px;
+    border: 1px solid var(--border);
     overflow: hidden;
 }
 
@@ -504,34 +632,42 @@ form .btn-primary {
 }
 
 .calendar-header-cell {
-    background: var(--primary);
-    color: var(--white);
-    padding: 0.75rem 0.25rem;
+    background: var(--charcoal);
+    color: var(--parchment);
+    padding: 0.625rem 0.25rem;
     text-align: center;
     font-weight: 600;
-    font-size: 0.8rem;
-    border-right: 1px solid rgba(255,255,255,0.2);
+    font-size: 0.75rem;
+    border-right: 1px solid rgba(255,255,255,0.1);
 }
 
 .calendar-header-cell:first-child {
-    background: var(--gray-200);
-    color: var(--gray-600);
+    background: var(--lather);
+    color: var(--charcoal-muted);
+    border-right: 1px solid var(--border);
+}
+
+.calendar-header-cell:last-child {
+    border-right: none;
 }
 
 .calendar-header-cell.today {
-    background: var(--success);
+    background: var(--leather);
 }
 
 .calendar-header-cell .day-name {
     display: block;
-    font-size: 0.7rem;
-    opacity: 0.9;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    opacity: 0.8;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
 }
 
 .calendar-header-cell .day-number {
     display: block;
-    font-size: 1.1rem;
-    margin-top: 0.15rem;
+    font-size: 1rem;
+    margin-top: 0.125rem;
 }
 
 .calendar-body {
@@ -543,45 +679,73 @@ form .btn-primary {
 }
 
 .calendar-time {
-    background: var(--gray-100);
-    padding: 0.5rem 0.25rem;
+    background: var(--lather);
+    padding: 0.375rem 0.25rem;
     text-align: center;
-    font-size: 0.75rem;
-    color: var(--gray-600);
-    border-bottom: 1px solid var(--gray-200);
-    border-right: 1px solid var(--gray-200);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--charcoal-muted);
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    min-height: 60px;
+    min-height: 56px;
 }
 
 .calendar-cell {
-    border-bottom: 1px solid var(--gray-200);
-    border-right: 1px solid var(--gray-200);
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
     padding: 0.25rem;
-    min-height: 60px;
+    min-height: 56px;
     position: relative;
-    background: var(--white);
+    background: var(--parchment);
+    transition: background 0.1s ease;
+}
+
+.calendar-cell:last-child {
+    border-right: none;
 }
 
 .calendar-cell:hover {
-    background: var(--gray-100);
+    background: var(--lather);
 }
 
 .calendar-cell.today {
-    background: #f0fdf4;
+    background: rgba(139, 69, 19, 0.04);
 }
 
+/* Signature: diagonal stripe en turnos ocupados */
 .grid-turno {
-    background: var(--primary);
-    color: var(--white);
+    background: var(--leather);
+    color: var(--parchment);
     border-radius: 4px;
-    padding: 0.25rem 0.35rem;
-    font-size: 0.7rem;
-    margin-bottom: 0.2rem;
+    padding: 0.25rem 0.375rem;
+    font-size: 0.6875rem;
+    margin-bottom: 0.125rem;
     cursor: pointer;
     overflow: hidden;
+    position: relative;
+    border-left: 3px solid rgba(255,255,255,0.3);
+}
+
+.grid-turno::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.4) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255,255,255,0.4) 50%,
+        rgba(255,255,255,0.4) 75%,
+        transparent 75%
+    );
+    background-size: 4px 4px;
 }
 
 .grid-turno:hover {
@@ -589,13 +753,30 @@ form .btn-primary {
 }
 
 .grid-turno.completado {
-    background: var(--success);
+    background: var(--sage);
+}
+
+.grid-turno.completado::before {
+    background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.3) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255,255,255,0.3) 50%,
+        rgba(255,255,255,0.3) 75%,
+        transparent 75%
+    );
+    background-size: 4px 4px;
 }
 
 .grid-turno.cancelado {
-    background: var(--gray-300);
-    color: var(--gray-600);
+    background: var(--chrome);
+    color: var(--charcoal-soft);
     text-decoration: line-through;
+}
+
+.grid-turno.cancelado::before {
+    display: none;
 }
 
 .grid-turno-client {
@@ -606,8 +787,8 @@ form .btn-primary {
 }
 
 .grid-turno-service {
-    font-size: 0.6rem;
-    opacity: 0.9;
+    font-size: 0.625rem;
+    opacity: 0.85;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -615,8 +796,8 @@ form .btn-primary {
 
 .grid-turno-actions {
     display: none;
-    gap: 0.2rem;
-    margin-top: 0.25rem;
+    gap: 0.125rem;
+    margin-top: 0.1875rem;
 }
 
 .grid-turno:hover .grid-turno-actions {
@@ -625,26 +806,30 @@ form .btn-primary {
 
 .grid-turno-actions button {
     flex: 1;
-    padding: 0.15rem 0.25rem;
-    font-size: 0.6rem;
+    padding: 0.125rem 0.25rem;
+    font-size: 0.5625rem;
+    font-weight: 600;
     border: none;
     border-radius: 3px;
     cursor: pointer;
-    background: rgba(255,255,255,0.3);
-    color: var(--white);
+    background: rgba(255,255,255,0.25);
+    color: var(--parchment);
+    transition: background 0.1s ease;
 }
 
 .grid-turno-actions button:hover {
-    background: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.4);
 }
 
-/* Precios */
+/* ========================================
+   Precios
+   ======================================== */
 .precio-item {
-    background: var(--white);
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 0.75rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background: var(--parchment);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.625rem;
+    border: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -652,80 +837,125 @@ form .btn-primary {
 
 .precio-nombre {
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.9375rem;
+    color: var(--charcoal);
 }
 
 .precio-input-group {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.375rem;
+    color: var(--charcoal-soft);
 }
 
 .precio-input {
-    width: 100px;
-    padding: 0.5rem;
-    border: 1px solid var(--gray-300);
-    border-radius: 8px;
-    font-size: 1rem;
+    width: 90px;
+    padding: 0.5rem 0.625rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    font-size: 0.9375rem;
+    font-weight: 600;
     text-align: right;
+    background: var(--parchment);
+    color: var(--charcoal);
+}
+
+.precio-input:focus {
+    outline: none;
+    border-color: var(--leather);
 }
 
 .empty-state {
     text-align: center;
-    padding: 2rem;
-    color: var(--gray-600);
+    padding: 3rem 2rem;
+    color: var(--charcoal-muted);
+    font-size: 0.9375rem;
 }
 
-/* Responsive */
+/* ========================================
+   Responsive - Tablet
+   ======================================== */
+@media (max-width: 900px) {
+    .metricas-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ========================================
+   Responsive - Mobile (grilla semanal)
+   ======================================== */
 @media (max-width: 768px) {
     .calendar-grid {
-        grid-template-columns: 45px repeat(7, 1fr);
-        font-size: 0.7rem;
+        grid-template-columns: 40px repeat(7, 1fr);
     }
 
     .calendar-header-cell {
-        padding: 0.5rem 0.15rem;
-        font-size: 0.65rem;
+        padding: 0.5rem 0.125rem;
+        font-size: 0.625rem;
     }
 
     .calendar-header-cell .day-number {
-        font-size: 0.9rem;
+        font-size: 0.875rem;
     }
 
     .calendar-time {
-        font-size: 0.65rem;
-        padding: 0.25rem;
+        font-size: 0.5625rem;
+        padding: 0.25rem 0.125rem;
     }
 
     .calendar-cell {
-        min-height: 50px;
-        padding: 0.15rem;
+        min-height: 48px;
+        padding: 0.125rem;
     }
 
     .grid-turno {
-        font-size: 0.6rem;
-        padding: 0.2rem;
+        font-size: 0.5625rem;
+        padding: 0.1875rem 0.25rem;
+        border-left-width: 2px;
+    }
+
+    .grid-turno::before {
+        width: 2px;
     }
 
     .grid-turno-actions {
         display: flex;
-        margin-top: 0.15rem;
+        margin-top: 0.125rem;
     }
 }
 
-/* Responsive */
+/* ========================================
+   Responsive - Mobile pequeño
+   ======================================== */
 @media (max-width: 480px) {
+    .section {
+        padding: 1rem;
+    }
+
+    .nav-bar {
+        padding: 0.875rem 1rem;
+    }
+
     .nav-links {
-        gap: 0.25rem;
+        gap: 0.375rem;
     }
 
     .nav-btn {
-        padding: 0.4rem 0.6rem;
-        font-size: 0.8rem;
+        padding: 0.4375rem 0.625rem;
+        font-size: 0.8125rem;
     }
 
     .metricas-grid {
         grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .metrica-card {
+        padding: 1rem;
+    }
+
+    .metrica-valor {
+        font-size: 1.25rem;
     }
 
     .turno-card {
@@ -737,5 +967,13 @@ form .btn-primary {
     .turno-actions {
         width: 100%;
         justify-content: flex-end;
+    }
+
+    .filtros {
+        flex-direction: column;
+    }
+
+    .input-field {
+        min-width: 100%;
     }
 }
