@@ -425,8 +425,27 @@ def get_metricas():
         'turnos_por_estado': turnos_stats or []
     })
 
-# Inicializar DB siempre (necesario para gunicorn)
-init_db()
+# Inicializar DB con retry para producción
+def init_db_with_retry(max_retries=3):
+    """Intenta inicializar la DB con reintentos."""
+    for attempt in range(max_retries):
+        try:
+            init_db()
+            print(f"Base de datos inicializada correctamente")
+            return True
+        except Exception as e:
+            print(f"Intento {attempt + 1}/{max_retries} falló: {e}")
+            if attempt < max_retries - 1:
+                import time
+                time.sleep(2)
+    print("No se pudo conectar a la base de datos. La app iniciará pero las operaciones de DB fallarán.")
+    return False
+
+# Inicializar DB (no bloquea el inicio si falla)
+try:
+    init_db_with_retry()
+except Exception as e:
+    print(f"Error inicializando DB: {e}")
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
