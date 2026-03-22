@@ -1062,8 +1062,9 @@ form .btn-primary {
     display: grid;
     border-bottom: 1px solid var(--cal-grid-line-hour);
     background: var(--parchment);
-    flex-shrink: 0;
-    overflow: hidden;
+    position: sticky;
+    top: 0;
+    z-index: 20;
 }
 
 .cal__week-header-gutter {
@@ -1123,13 +1124,13 @@ form .btn-primary {
     overflow-y: auto;
     overflow-x: hidden;
     position: relative;
-    scrollbar-gutter: stable;
 }
 
 .cal__grid {
     display: grid;
     position: relative;
     min-height: calc(var(--cal-hour-height) * 14); /* 9am-11pm = 14 hours */
+    margin-top: 8px; /* Espacio para que se vea el label 9:00 */
 }
 
 /* ========================================

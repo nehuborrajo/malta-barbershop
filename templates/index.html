@@ -51,12 +51,11 @@
 
                 <!-- Calendar Body -->
                 <div class="cal__body" id="cal-body">
-                    <!-- Week Header (rendered by JS) -->
-                    <div class="cal__week-header cal__week-header--week" id="cal-week-header"></div>
-
-                    <!-- Grid Container -->
+                    <!-- Grid Container (includes sticky header) -->
                     <div class="cal__grid-wrapper" id="cal-grid-wrapper">
-                        <div class="cal__grid cal__grid--week" id="cal-grid"></div>
+                        <!-- Week Header (rendered by JS, sticky inside scroll) -->
+                        <div class="cal__week-header" id="cal-week-header"></div>
+                        <div class="cal__grid" id="cal-grid"></div>
                         <div class="cal__current-time" id="cal-current-time" style="display: none;"></div>
                     </div>
 
