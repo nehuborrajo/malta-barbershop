@@ -30,6 +30,21 @@
     /* Elevación */
     --shadow-sm: 0 1px 2px rgba(28, 28, 28, 0.04);
     --shadow-md: 0 2px 8px rgba(28, 28, 28, 0.06);
+    --shadow-lg: 0 8px 32px rgba(28, 28, 28, 0.12);
+
+    /* Calendar-specific */
+    --cal-hour-height: 60px;
+    --cal-time-gutter: 56px;
+    --cal-grid-line: rgba(139, 69, 19, 0.08);
+    --cal-grid-line-hour: rgba(139, 69, 19, 0.15);
+    --cal-current-time: var(--pole-red);
+    --cal-today-bg: rgba(139, 69, 19, 0.04);
+
+    /* Event colors by service */
+    --event-corte: var(--leather);
+    --event-barba: #6B8E23;
+    --event-color: #4A90A4;
+    --event-custom: var(--charcoal-soft);
 }
 
 body {
@@ -870,6 +885,833 @@ form .btn-primary {
     padding: 3rem 2rem;
     color: var(--charcoal-muted);
     font-size: 0.9375rem;
+}
+
+/* ========================================
+   APPLE CALENDAR - Main Container
+   ======================================== */
+.cal {
+    background: var(--parchment);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 180px);
+    min-height: 500px;
+}
+
+/* ========================================
+   APPLE CALENDAR - Header
+   ======================================== */
+.cal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--parchment);
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.cal__nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cal__nav-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: var(--charcoal-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.cal__nav-btn:hover {
+    background: var(--lather);
+    border-color: var(--border-strong);
+    color: var(--charcoal);
+}
+
+.cal__today-btn {
+    background: var(--lather);
+    border: 1px solid var(--border);
+    padding: 0.375rem 0.875rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--charcoal);
+    transition: all 0.15s ease;
+}
+
+.cal__today-btn:hover {
+    background: var(--leather);
+    border-color: var(--leather);
+    color: var(--parchment);
+}
+
+.cal__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    min-width: 180px;
+    text-align: center;
+}
+
+.cal__view-switcher {
+    display: flex;
+    background: var(--lather);
+    padding: 3px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.cal__view-btn {
+    background: transparent;
+    border: none;
+    padding: 0.375rem 0.75rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--charcoal-soft);
+    transition: all 0.15s ease;
+}
+
+.cal__view-btn:hover {
+    color: var(--charcoal);
+}
+
+.cal__view-btn.active {
+    background: var(--parchment);
+    color: var(--charcoal);
+    box-shadow: var(--shadow-sm);
+}
+
+.cal__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cal__search {
+    width: 180px;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.8125rem;
+    background: var(--lather);
+    color: var(--charcoal);
+    transition: all 0.15s ease;
+}
+
+.cal__search:focus {
+    outline: none;
+    border-color: var(--leather);
+    background: var(--parchment);
+}
+
+.cal__search::placeholder {
+    color: var(--charcoal-muted);
+}
+
+.cal__new-btn {
+    background: var(--leather);
+    border: none;
+    padding: 0.375rem 0.875rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--parchment);
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.cal__new-btn:hover {
+    background: var(--leather-dark);
+}
+
+/* ========================================
+   APPLE CALENDAR - Body Container
+   ======================================== */
+.cal__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ========================================
+   APPLE CALENDAR - Week Header (Day names)
+   ======================================== */
+.cal__week-header {
+    display: grid;
+    border-bottom: 1px solid var(--cal-grid-line-hour);
+    background: var(--parchment);
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.cal__week-header-gutter {
+    border-right: 1px solid var(--cal-grid-line);
+    min-width: 0;
+}
+
+.cal__week-header-day {
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+    border-right: 1px solid var(--cal-grid-line);
+    transition: background 0.15s ease;
+    min-width: 0;
+}
+
+.cal__week-header-day:last-child {
+    border-right: none;
+}
+
+.cal__week-header-day.is-today {
+    background: var(--cal-today-bg);
+}
+
+.cal__day-name {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--charcoal-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.cal__day-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    border-radius: 50%;
+    transition: all 0.15s ease;
+}
+
+.cal__week-header-day.is-today .cal__day-number {
+    background: var(--leather);
+    color: var(--parchment);
+}
+
+/* ========================================
+   APPLE CALENDAR - Grid Container
+   ======================================== */
+.cal__grid-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    scrollbar-gutter: stable;
+}
+
+.cal__grid {
+    display: grid;
+    position: relative;
+    min-height: calc(var(--cal-hour-height) * 14); /* 9am-11pm = 14 hours */
+}
+
+/* ========================================
+   APPLE CALENDAR - Time Gutter
+   ======================================== */
+.cal__time-gutter {
+    border-right: 1px solid var(--cal-grid-line);
+    background: var(--parchment);
+    position: relative;
+    min-width: 0;
+}
+
+.cal__time-label {
+    position: absolute;
+    right: 0.5rem;
+    transform: translateY(-50%);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--charcoal-muted);
+    background: var(--parchment);
+    padding: 0 0.25rem;
+}
+
+/* ========================================
+   APPLE CALENDAR - Day Column
+   ======================================== */
+.cal__day-column {
+    position: relative;
+    border-right: 1px solid var(--cal-grid-line);
+    background: var(--parchment);
+    transition: background 0.15s ease;
+    min-width: 0;
+}
+
+.cal__day-column:last-child {
+    border-right: none;
+}
+
+.cal__day-column:last-child {
+    border-right: none;
+}
+
+.cal__day-column.is-today {
+    background: var(--cal-today-bg);
+}
+
+.cal__day-column.is-past {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+/* Hour lines */
+.cal__hour-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--cal-grid-line-hour);
+    pointer-events: none;
+}
+
+.cal__half-hour-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--cal-grid-line);
+    pointer-events: none;
+}
+
+/* Clickable time slots */
+.cal__time-slot {
+    position: absolute;
+    left: 0;
+    right: 0;
+    cursor: pointer;
+    transition: background 0.1s ease;
+}
+
+.cal__time-slot:hover {
+    background: rgba(139, 69, 19, 0.06);
+}
+
+.cal__time-slot.is-drop-target {
+    background: rgba(139, 69, 19, 0.12);
+}
+
+/* ========================================
+   APPLE CALENDAR - Events
+   ======================================== */
+.cal__event {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    min-height: 24px;
+    border-radius: 4px;
+    padding: 0.25rem 0.375rem;
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    z-index: 1;
+}
+
+.cal__event:hover {
+    z-index: 10;
+    box-shadow: var(--shadow-md);
+}
+
+.cal__event--pending {
+    background: var(--leather);
+    color: var(--parchment);
+}
+
+.cal__event--completado {
+    background: var(--sage);
+    color: var(--parchment);
+}
+
+.cal__event--cancelado {
+    background: var(--chrome);
+    color: var(--parchment);
+    opacity: 0.6;
+}
+
+.cal__event--dragging {
+    opacity: 0.8;
+    box-shadow: var(--shadow-lg);
+    z-index: 100;
+    cursor: grabbing;
+}
+
+.cal__event--resizing {
+    z-index: 100;
+}
+
+/* Event stripe (left border indicator) */
+.cal__event::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 4px 0 0 4px;
+}
+
+/* Overlapping events */
+.cal__event[data-overlap="2"] {
+    width: calc(50% - 3px);
+}
+
+.cal__event[data-overlap="3"] {
+    width: calc(33.333% - 3px);
+}
+
+.cal__event[data-overlap="4"] {
+    width: calc(25% - 3px);
+}
+
+.cal__event[data-overlap-index="1"] {
+    left: calc(50% + 1px);
+}
+
+.cal__event[data-overlap="3"][data-overlap-index="1"] {
+    left: calc(33.333% + 1px);
+}
+
+.cal__event[data-overlap="3"][data-overlap-index="2"] {
+    left: calc(66.666% + 1px);
+}
+
+.cal__event__time {
+    font-size: 0.625rem;
+    font-weight: 500;
+    opacity: 0.9;
+    white-space: nowrap;
+}
+
+.cal__event__title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+
+.cal__event__service {
+    font-size: 0.625rem;
+    opacity: 0.85;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cal__event__badges {
+    display: flex;
+    gap: 0.25rem;
+    margin-top: 0.125rem;
+}
+
+.cal__event__badge {
+    font-size: 0.5rem;
+    font-weight: 600;
+    padding: 0.0625rem 0.25rem;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.25);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+/* Resize handle */
+.cal__event__resize {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    cursor: ns-resize;
+    background: transparent;
+}
+
+.cal__event:hover .cal__event__resize {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ========================================
+   APPLE CALENDAR - Current Time Indicator
+   ======================================== */
+.cal__current-time {
+    position: absolute;
+    left: var(--cal-time-gutter);
+    right: 0;
+    height: 2px;
+    background: var(--cal-current-time);
+    z-index: 50;
+    pointer-events: none;
+}
+
+.cal__current-time::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    background: var(--cal-current-time);
+    border-radius: 50%;
+}
+
+/* ========================================
+   APPLE CALENDAR - Agenda View
+   ======================================== */
+.cal__agenda {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+.cal__agenda-day {
+    margin-bottom: 1.5rem;
+}
+
+.cal__agenda-date {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--charcoal-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.75rem;
+    position: sticky;
+    top: 0;
+    background: var(--parchment);
+}
+
+.cal__agenda-date.is-today {
+    color: var(--leather);
+}
+
+.cal__agenda-event {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    border: 1px solid var(--border);
+}
+
+.cal__agenda-event:hover {
+    background: var(--lather);
+}
+
+.cal__agenda-event__time {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--charcoal-soft);
+    min-width: 50px;
+}
+
+.cal__agenda-event__indicator {
+    width: 4px;
+    height: 100%;
+    min-height: 40px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.cal__agenda-event__indicator--pending {
+    background: var(--leather);
+}
+
+.cal__agenda-event__indicator--completado {
+    background: var(--sage);
+}
+
+.cal__agenda-event__indicator--cancelado {
+    background: var(--chrome);
+}
+
+.cal__agenda-event__content {
+    flex: 1;
+}
+
+.cal__agenda-event__title {
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 0.125rem;
+}
+
+.cal__agenda-event__service {
+    font-size: 0.8125rem;
+    color: var(--charcoal-soft);
+}
+
+.cal__agenda-event__badges {
+    display: flex;
+    gap: 0.375rem;
+    margin-top: 0.375rem;
+}
+
+.cal__agenda-empty {
+    text-align: center;
+    padding: 3rem;
+    color: var(--charcoal-muted);
+}
+
+/* ========================================
+   APPLE CALENDAR - Event Popover
+   ======================================== */
+.cal__popover {
+    position: fixed;
+    z-index: 200;
+    background: var(--parchment);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    width: 280px;
+    overflow: hidden;
+    animation: popoverIn 0.15s ease;
+}
+
+@keyframes popoverIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.cal__popover__header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.cal__popover__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 0.25rem;
+}
+
+.cal__popover__subtitle {
+    font-size: 0.8125rem;
+    color: var(--charcoal-soft);
+}
+
+.cal__popover__body {
+    padding: 1rem;
+}
+
+.cal__popover__row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--charcoal);
+}
+
+.cal__popover__row:last-child {
+    margin-bottom: 0;
+}
+
+.cal__popover__icon {
+    width: 16px;
+    color: var(--charcoal-muted);
+    flex-shrink: 0;
+}
+
+.cal__popover__actions {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--border);
+    background: var(--lather);
+}
+
+.cal__popover__btn {
+    flex: 1;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.cal__popover__btn--primary {
+    background: var(--sage);
+    color: var(--parchment);
+}
+
+.cal__popover__btn--primary:hover {
+    background: #245020;
+}
+
+.cal__popover__btn--danger {
+    background: var(--pole-red);
+    color: var(--parchment);
+}
+
+.cal__popover__btn--danger:hover {
+    background: #8B1A29;
+}
+
+.cal__popover__btn--secondary {
+    background: var(--parchment);
+    color: var(--charcoal);
+    border: 1px solid var(--border);
+}
+
+.cal__popover__btn--secondary:hover {
+    background: var(--lather);
+}
+
+/* ========================================
+   APPLE CALENDAR - Quick Input
+   ======================================== */
+.cal__quick-input {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    padding: 0.5rem;
+    border: 2px solid var(--leather);
+    border-radius: 4px;
+    font-size: 0.8125rem;
+    background: var(--parchment);
+    z-index: 100;
+    box-shadow: var(--shadow-md);
+}
+
+.cal__quick-input:focus {
+    outline: none;
+}
+
+/* ========================================
+   APPLE CALENDAR - Animations
+   ======================================== */
+@keyframes eventAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.cal__event--new {
+    animation: eventAppear 0.2s ease;
+}
+
+/* ========================================
+   APPLE CALENDAR - Responsive
+   ======================================== */
+@media (max-width: 900px) {
+    .cal__header {
+        flex-wrap: wrap;
+    }
+
+    .cal__search {
+        width: 100%;
+        order: 10;
+    }
+
+    .cal__actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 768px) {
+    .cal {
+        height: calc(100vh - 160px);
+        border-radius: 8px;
+    }
+
+    .cal__header {
+        padding: 0.75rem;
+    }
+
+    .cal__title {
+        font-size: 1rem;
+        min-width: auto;
+    }
+
+    :root {
+        --cal-time-gutter: 40px;
+        --cal-hour-height: 50px;
+    }
+
+    .cal__time-label {
+        font-size: 0.5625rem;
+    }
+
+    .cal__day-number {
+        width: 24px;
+        height: 24px;
+        font-size: 0.8125rem;
+    }
+
+    .cal__event__title {
+        font-size: 0.6875rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .cal__view-switcher {
+        display: none;
+    }
+
+    .cal__nav {
+        flex: 1;
+        justify-content: space-between;
+    }
+
+    .cal__actions {
+        width: 100%;
+    }
+
+    .cal__search {
+        flex: 1;
+    }
+
+    .cal__popover {
+        width: calc(100vw - 2rem);
+        left: 1rem !important;
+        right: 1rem !important;
+    }
 }
 
 /* ========================================

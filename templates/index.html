@@ -25,32 +25,52 @@
 
         <!-- Sección Agenda -->
         <section id="agenda" class="section active">
-            <div class="section-header">
-                <h2>Agenda</h2>
-                <div class="view-toggle">
-                    <button class="toggle-btn active" data-view="diaria">Día</button>
-                    <button class="toggle-btn" data-view="semanal">Semana</button>
+            <div class="cal cal--week" id="calendar">
+                <!-- Calendar Header -->
+                <header class="cal__header">
+                    <div class="cal__nav">
+                        <button class="cal__nav-btn" id="cal-prev" title="Anterior">◀</button>
+                        <button class="cal__today-btn" id="cal-today">Hoy</button>
+                        <button class="cal__nav-btn" id="cal-next" title="Siguiente">▶</button>
+                    </div>
+
+                    <h2 class="cal__title" id="cal-title">Marzo 2026</h2>
+
+                    <div class="cal__view-switcher">
+                        <button class="cal__view-btn" data-view="day">Día</button>
+                        <button class="cal__view-btn active" data-view="week">Semana</button>
+                    </div>
+
+                    <div class="cal__actions">
+                        <input type="text" class="cal__search" id="cal-search" placeholder="Buscar cliente...">
+                        <button class="cal__new-btn" id="cal-new-event">
+                            <span>+</span> Nuevo
+                        </button>
+                    </div>
+                </header>
+
+                <!-- Calendar Body -->
+                <div class="cal__body" id="cal-body">
+                    <!-- Week Header (rendered by JS) -->
+                    <div class="cal__week-header cal__week-header--week" id="cal-week-header"></div>
+
+                    <!-- Grid Container -->
+                    <div class="cal__grid-wrapper" id="cal-grid-wrapper">
+                        <div class="cal__grid cal__grid--week" id="cal-grid"></div>
+                        <div class="cal__current-time" id="cal-current-time" style="display: none;"></div>
+                    </div>
+
+                    <!-- Agenda View (hidden by default) -->
+                    <div class="cal__agenda" id="cal-agenda" style="display: none;"></div>
                 </div>
             </div>
 
-            <div class="date-nav">
-                <button id="prev-date" class="date-btn">◀</button>
-                <span id="current-date-display"></span>
-                <button id="next-date" class="date-btn">▶</button>
-                <button id="today-btn" class="btn-secondary">Hoy</button>
-            </div>
-
-            <div class="agenda-options">
+            <!-- Options bar -->
+            <div class="cal-options" style="margin-top: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
                 <label class="checkbox-label">
                     <input type="checkbox" id="mostrar-domingo">
                     <span>Mostrar Domingo</span>
                 </label>
-            </div>
-
-            <button id="btn-nuevo-turno" class="btn-primary btn-full">+ Nuevo Turno</button>
-
-            <div id="agenda-container" class="agenda-container">
-                <!-- Turnos se cargan dinámicamente -->
             </div>
         </section>
 
@@ -171,6 +191,13 @@
                     <label>Horario</label>
                     <select id="turno-horario" class="input-field" required>
                         <!-- Se carga dinámicamente -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Duración</label>
+                    <select id="turno-duracion" class="input-field" required>
+                        <option value="30">30 minutos</option>
+                        <option value="60" selected>1 hora</option>
                     </select>
                 </div>
                 <button type="submit" class="btn-primary btn-full">Guardar</button>

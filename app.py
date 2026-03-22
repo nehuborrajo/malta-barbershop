@@ -60,12 +60,19 @@ def init_db():
                 nombre_cliente TEXT NOT NULL,
                 servicio_id INTEGER,
                 turno_fijo_id INTEGER,
+                duracion INTEGER DEFAULT 60,
                 estado TEXT DEFAULT 'pendiente',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (servicio_id) REFERENCES servicios(id),
                 FOREIGN KEY (turno_fijo_id) REFERENCES turnos_fijos(id)
             )
         ''')
+
+        # Agregar columna duracion si no existe (para DBs existentes)
+        try:
+            cursor.execute('ALTER TABLE turnos ADD COLUMN IF NOT EXISTS duracion INTEGER DEFAULT 60')
+        except:
+            pass
 
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS pagos (
@@ -134,12 +141,19 @@ def init_db():
                 nombre_cliente TEXT NOT NULL,
                 servicio_id INTEGER,
                 turno_fijo_id INTEGER,
+                duracion INTEGER DEFAULT 60,
                 estado TEXT DEFAULT 'pendiente',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (servicio_id) REFERENCES servicios(id),
                 FOREIGN KEY (turno_fijo_id) REFERENCES turnos_fijos(id)
             )
         ''')
+
+        # Agregar columna duracion si no existe (para DBs existentes)
+        try:
+            cursor.execute('ALTER TABLE turnos ADD COLUMN duracion INTEGER DEFAULT 60')
+        except:
+            pass
 
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS pagos (
@@ -281,8 +295,8 @@ def get_turnos():
 def create_turno():
     data = request.json
     turno_id = query_db(
-        'INSERT INTO turnos (fecha, horario, nombre_cliente, servicio_id, turno_fijo_id, estado) VALUES (?, ?, ?, ?, ?, ?)',
-        (data['fecha'], data['horario'], data['nombre_cliente'], data.get('servicio_id'), data.get('turno_fijo_id'), 'pendiente'),
+        'INSERT INTO turnos (fecha, horario, nombre_cliente, servicio_id, turno_fijo_id, duracion, estado) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        (data['fecha'], data['horario'], data['nombre_cliente'], data.get('servicio_id'), data.get('turno_fijo_id'), data.get('duracion', 60), 'pendiente'),
         commit=True
     )
     return jsonify({'id': turno_id, 'message': 'Turno creado'}), 201
@@ -291,8 +305,8 @@ def create_turno():
 def update_turno(id):
     data = request.json
     query_db(
-        'UPDATE turnos SET fecha = ?, horario = ?, nombre_cliente = ?, servicio_id = ?, estado = ? WHERE id = ?',
-        (data['fecha'], data['horario'], data['nombre_cliente'], data.get('servicio_id'), data.get('estado', 'pendiente'), id),
+        'UPDATE turnos SET fecha = ?, horario = ?, nombre_cliente = ?, servicio_id = ?, duracion = ?, estado = ? WHERE id = ?',
+        (data['fecha'], data['horario'], data['nombre_cliente'], data.get('servicio_id'), data.get('duracion', 60), data.get('estado', 'pendiente'), id),
         commit=True
     )
     return jsonify({'message': 'Turno actualizado'})
