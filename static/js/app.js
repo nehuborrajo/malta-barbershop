@@ -1108,13 +1108,6 @@ const CalendarApp = {
             ModalManager.openTurnoModal();
         });
 
-        // Search
-        const searchInput = document.getElementById('cal-search');
-        searchInput.addEventListener('input', Utils.debounce((e) => {
-            CalendarState.set('searchQuery', e.target.value);
-            CalendarRenderer.render();
-        }, 300));
-
         // Show Sunday toggle
         document.getElementById('mostrar-domingo').addEventListener('change', (e) => {
             CalendarState.set('showSunday', e.target.checked);
