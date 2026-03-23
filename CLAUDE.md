@@ -15,13 +15,14 @@ Aplicación web para gestionar turnos de una barbería. Permite agendar citas, r
 ```
 barberia-app/
 ├── app.py              # Backend Flask, API REST, conexión DB
+├── gunicorn.conf.py    # Configuración Gunicorn (bind, workers)
 ├── templates/
 │   └── index.html      # SPA con todas las secciones
 ├── static/
 │   ├── css/styles.css  # Estilos BEM, tema barbería
 │   └── js/app.js       # Lógica del calendario y UI
 ├── requirements.txt    # Dependencias Python
-└── Procfile           # Configuración Gunicorn para Render
+└── Procfile           # Comando de inicio para Render
 ```
 
 ## Modelo de Datos
@@ -35,7 +36,8 @@ barberia-app/
 ### Estados de turno
 - `pendiente`: Turno agendado, sin completar
 - `completado`: Turno realizado y cobrado
-- `cancelado`: Turno cancelado (soft delete)
+
+Nota: Los turnos eliminados se borran completamente de la base de datos (no hay soft delete).
 
 ## Funcionalidades Principales
 
@@ -43,10 +45,10 @@ barberia-app/
 - Vista día y semana con timeline vertical (9:00-22:00)
 - Indicador de hora actual (línea roja)
 - Drag & drop para mover turnos
-- Swipe en móvil para navegar
+- Swipe en móvil para navegar entre días/semanas
 - Eventos superpuestos se muestran lado a lado
 - Click en slot vacío → crear turno
-- Click en turno → popover con acciones (Cobrar/Cancelar)
+- Click en turno → popover con acciones (Cobrar/Editar/Eliminar)
 
 ### Turnos Fijos
 - Clientes que vienen siempre el mismo día/hora
@@ -72,7 +74,7 @@ GET  /api/turnos?fecha_inicio&fecha_fin  # Lista turnos
 POST /api/turnos                        # Crear turno
 PUT  /api/turnos/:id                    # Actualizar turno
 POST /api/turnos/:id/completar          # Marcar pagado
-POST /api/turnos/:id/cancelar           # Cancelar
+POST /api/turnos/:id/cancelar           # Eliminar turno (DELETE real)
 
 GET  /api/turnos-fijos                  # Lista fijos
 POST /api/turnos-fijos                  # Crear fijo
@@ -91,6 +93,7 @@ GET  /api/metricas                      # Estadísticas
 - `DATABASE_URL`: Connection string PostgreSQL (solo producción)
   - Usar Transaction Pooler de Supabase (puerto 6543)
   - Si no está definida, usa SQLite local
+- `PORT`: Puerto para Gunicorn (default 10000 en Render)
 
 ### Ejecutar localmente
 ```bash
@@ -104,6 +107,11 @@ python app.py
 ### Conexión a Supabase
 - Se fuerza IPv4 en producción (Render tiene problemas con IPv6)
 - Usar puerto 6543 (Transaction Pooler) en lugar de 5432
+- Las fechas se serializan a formato ISO para compatibilidad con PostgreSQL
+
+### Gunicorn en Render
+- Configuración en `gunicorn.conf.py` (bind automático al PORT)
+- La DB se inicializa en un thread separado para no bloquear el worker
 
 ### CSS
 - Metodología BEM para el calendario (`.cal__*`)
@@ -114,6 +122,7 @@ python app.py
 - Arquitectura modular con IIFEs
 - Módulos: CalendarState, CalendarRenderer, DragDropManager, SwipeManager, ModalManager, PopoverManager
 - API wrapper centralizado
+- Fechas formateadas con componentes locales (evita problemas de timezone)
 
 ## Decisiones de Diseño
 - SPA sin framework para simplicidad
@@ -121,3 +130,4 @@ python app.py
 - Turnos de 30 o 60 minutos (configurable al crear)
 - Horario de trabajo: 9:00 - 22:00
 - Domingo oculto por defecto (toggle disponible)
+- Los turnos eliminados se borran permanentemente (sin historial de cancelaciones)
