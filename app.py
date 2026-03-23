@@ -2,6 +2,17 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from datetime import datetime, timedelta
 import os
+import socket
+
+# Forzar IPv4 para evitar problemas de conexión con Supabase
+original_getaddrinfo = socket.getaddrinfo
+
+def forced_ipv4_getaddrinfo(host, port, family=0, type=0, proto=0, flags=0):
+    return original_getaddrinfo(host, port, socket.AF_INET, type, proto, flags)
+
+# Aplicar solo si hay DATABASE_URL (producción)
+if os.environ.get('DATABASE_URL'):
+    socket.getaddrinfo = forced_ipv4_getaddrinfo
 
 app = Flask(__name__)
 CORS(app)
