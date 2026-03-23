@@ -471,21 +471,25 @@ def init_db_with_retry(max_retries=3):
     for attempt in range(max_retries):
         try:
             init_db()
-            print(f"Base de datos inicializada correctamente")
+            print(f"Base de datos inicializada correctamente", flush=True)
             return True
         except Exception as e:
-            print(f"Intento {attempt + 1}/{max_retries} falló: {e}")
+            print(f"Intento {attempt + 1}/{max_retries} falló: {e}", flush=True)
             if attempt < max_retries - 1:
                 import time
                 time.sleep(2)
-    print("No se pudo conectar a la base de datos. La app iniciará pero las operaciones de DB fallarán.")
+    print("No se pudo conectar a la base de datos.", flush=True)
     return False
 
-# Inicializar DB (no bloquea el inicio si falla)
-try:
-    init_db_with_retry()
-except Exception as e:
-    print(f"Error inicializando DB: {e}")
+# Inicializar DB en background para no bloquear el inicio del worker
+import threading
+def init_db_background():
+    try:
+        init_db_with_retry()
+    except Exception as e:
+        print(f"Error inicializando DB: {e}", flush=True)
+
+threading.Thread(target=init_db_background, daemon=True).start()
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
