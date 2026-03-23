@@ -786,15 +786,11 @@ const PopoverManager = {
             actionsHtml = `
                 <button class="cal__popover__btn cal__popover__btn--primary" data-action="cobrar">Cobrar</button>
                 <button class="cal__popover__btn cal__popover__btn--secondary" data-action="editar">Editar</button>
-                <button class="cal__popover__btn cal__popover__btn--danger" data-action="cancelar">Cancelar</button>
+                <button class="cal__popover__btn cal__popover__btn--danger" data-action="cancelar">Eliminar</button>
             `;
         } else if (event.estado === 'completado') {
             actionsHtml = `
                 <span style="color: var(--sage); font-weight: 600;">Pagado: $${event.monto || 0}</span>
-            `;
-        } else if (event.estado === 'cancelado') {
-            actionsHtml = `
-                <span style="color: var(--pole-red); font-weight: 600;">Cancelado</span>
             `;
         }
 
@@ -882,7 +878,7 @@ const PopoverManager = {
         });
 
         popover.querySelector('[data-action="cancelar"]')?.addEventListener('click', async () => {
-            if (confirm('¿Cancelar este turno?')) {
+            if (confirm('¿Eliminar este turno?')) {
                 await API.cancelarTurno(event.id);
                 this.close();
                 await CalendarApp.loadEvents();

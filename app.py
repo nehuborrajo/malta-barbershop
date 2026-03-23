@@ -339,8 +339,8 @@ def update_turno(id):
 
 @app.route('/api/turnos/<int:id>/cancelar', methods=['POST'])
 def cancelar_turno(id):
-    query_db('UPDATE turnos SET estado = ? WHERE id = ?', ('cancelado', id), commit=True)
-    return jsonify({'message': 'Turno cancelado'})
+    query_db('DELETE FROM turnos WHERE id = ?', (id,), commit=True)
+    return jsonify({'message': 'Turno eliminado'})
 
 @app.route('/api/turnos/<int:id>/completar', methods=['POST'])
 def completar_turno(id):
