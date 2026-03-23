@@ -69,10 +69,15 @@ def init_db():
         ''')
 
         # Agregar columna duracion si no existe (para DBs existentes)
-        try:
-            cursor.execute('ALTER TABLE turnos ADD COLUMN IF NOT EXISTS duracion INTEGER DEFAULT 60')
-        except:
-            pass
+        cursor.execute('''
+            DO $$
+            BEGIN
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                               WHERE table_name='turnos' AND column_name='duracion') THEN
+                    ALTER TABLE turnos ADD COLUMN duracion INTEGER DEFAULT 60;
+                END IF;
+            END $$;
+        ''')
 
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS pagos (
