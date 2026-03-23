@@ -785,6 +785,7 @@ const PopoverManager = {
         if (event.estado === 'pendiente') {
             actionsHtml = `
                 <button class="cal__popover__btn cal__popover__btn--primary" data-action="cobrar">Cobrar</button>
+                <button class="cal__popover__btn cal__popover__btn--secondary" data-action="editar">Editar</button>
                 <button class="cal__popover__btn cal__popover__btn--danger" data-action="cancelar">Cancelar</button>
             `;
         } else if (event.estado === 'completado') {
@@ -873,6 +874,11 @@ const PopoverManager = {
         popover.querySelector('[data-action="cobrar"]')?.addEventListener('click', () => {
             this.close();
             ModalManager.openPagoModal(event);
+        });
+
+        popover.querySelector('[data-action="editar"]')?.addEventListener('click', () => {
+            this.close();
+            ModalManager.openTurnoModal(event);
         });
 
         popover.querySelector('[data-action="cancelar"]')?.addEventListener('click', async () => {
