@@ -52,7 +52,10 @@ const CalendarState = (function() {
 // ============================================
 const Utils = {
     formatDate(date) {
-        return date.toISOString().split('T')[0];
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     },
 
     formatDateDisplay(date) {
@@ -457,9 +460,10 @@ const CalendarRenderer = {
         const dayStartMinutes = CONFIG.HOURS_START * 60;
         const duration = event.duracion || CONFIG.DEFAULT_DURATION;
 
+        // Add small gap (2px top, 2px bottom) via calc
         const topPercent = ((startMinutes - dayStartMinutes) / (totalHours * 60)) * 100;
         const heightPercent = (duration / (totalHours * 60)) * 100;
-        const minHeightPercent = (CONFIG.SLOT_MINUTES / (totalHours * 60)) * 100; // Minimum visible height
+        const minHeightPercent = (CONFIG.SLOT_MINUTES / (totalHours * 60)) * 100;
 
         // Calculate width and left for overlaps
         const width = overlap.count > 1 ? `calc(${100 / overlap.count}% - 3px)` : 'calc(100% - 4px)';
@@ -479,7 +483,7 @@ const CalendarRenderer = {
                  data-overlap="${overlap.count}"
                  data-overlap-index="${overlap.index}"
                  draggable="${event.estado === 'pendiente'}"
-                 style="top: ${topPercent}%; height: ${heightPercent}%; width: ${width}; left: ${left}; min-height: ${Math.max(minHeightPercent, 3)}%">
+                 style="top: calc(${topPercent}% + 2px); height: calc(${heightPercent}% - 4px); width: ${width}; left: ${left};">
                 <span class="cal__event__title">${event.nombre_cliente}</span>
                 ${event.servicio_nombre ? `<span class="cal__event__service">${event.servicio_nombre}</span>` : ''}
                 ${badges ? `<div class="cal__event__badges">${badges}</div>` : ''}
