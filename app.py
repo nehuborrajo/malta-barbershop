@@ -217,10 +217,20 @@ def query_db(query, params=(), fetchone=False, commit=False):
     # Convertir a dict para compatibilidad
     if result:
         if fetchone:
-            return dict(result)
+            return serialize_row(dict(result))
         else:
-            return [dict(row) for row in result]
+            return [serialize_row(dict(row)) for row in result]
     return [] if not fetchone else None
+
+def serialize_row(row):
+    """Convertir fechas y otros tipos a formato JSON serializable."""
+    from datetime import date, datetime
+    for key, value in row.items():
+        if isinstance(value, date):
+            row[key] = value.strftime('%Y-%m-%d')
+        elif isinstance(value, datetime):
+            row[key] = value.isoformat()
+    return row
 
 # ============ RUTAS DE PÁGINAS ============
 
