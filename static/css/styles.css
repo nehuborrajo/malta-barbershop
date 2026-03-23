@@ -1224,9 +1224,9 @@ form .btn-primary {
     position: absolute;
     left: 2px;
     right: 2px;
-    min-height: 24px;
+    min-height: 20px;
     border-radius: 4px;
-    padding: 0.25rem 0.375rem;
+    padding: 0.125rem 0.375rem;
     cursor: pointer;
     overflow: hidden;
     display: flex;
@@ -1691,21 +1691,32 @@ form .btn-primary {
 }
 
 @media (max-width: 480px) {
-    .cal__view-switcher {
-        display: none;
+    .cal__header {
+        flex-wrap: wrap;
+        gap: 0.5rem;
     }
 
     .cal__nav {
+        order: 1;
+    }
+
+    .cal__title {
+        order: 2;
         flex: 1;
-        justify-content: space-between;
+        text-align: right;
+        min-width: auto;
+        font-size: 0.875rem;
+    }
+
+    .cal__view-switcher {
+        order: 3;
+        width: 100%;
+        justify-content: center;
     }
 
     .cal__actions {
+        order: 4;
         width: 100%;
-    }
-
-    .cal__search {
-        flex: 1;
     }
 
     .cal__popover {
