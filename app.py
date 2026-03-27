@@ -20,56 +20,19 @@ CORS(app)
 # Usar PostgreSQL en producción, SQLite en desarrollo
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
-# Connection pool para PostgreSQL (reutilizar conexiones)
-_db_pool = None
-
-def get_db_pool():
-    """Obtener o crear el connection pool de PostgreSQL."""
-    global _db_pool
-    if _db_pool is None and DATABASE_URL:
-        from psycopg2 import pool
-        try:
-            # Con 2 workers de Gunicorn: 2-5 conexiones por worker es suficiente
-            _db_pool = pool.ThreadedConnectionPool(
-                minconn=1,
-                maxconn=5,  # 5 conexiones por worker (2 workers = 10 total max)
-                dsn=DATABASE_URL
-            )
-            print("Connection pool inicializado correctamente", flush=True)
-        except Exception as e:
-            print(f"Error creando pool: {e}", flush=True)
-            raise
-    return _db_pool
-
 def get_db():
     """Obtener conexión a la base de datos."""
     if DATABASE_URL:
-        # PostgreSQL con connection pooling
+        # PostgreSQL (producción)
         import psycopg2
         from psycopg2.extras import RealDictCursor
-
-        pool = get_db_pool()
-        if pool:
-            conn = pool.getconn()
-            conn.cursor_factory = RealDictCursor
-            return conn
-        else:
-            # Fallback sin pool (no debería pasar)
-            conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
-            return conn
+        conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     else:
         # SQLite (desarrollo local)
         import sqlite3
         conn = sqlite3.connect('barberia.db')
         conn.row_factory = sqlite3.Row
-        return conn
-
-def return_db_to_pool(conn):
-    """Devolver conexión al pool (solo para PostgreSQL)."""
-    if DATABASE_URL and _db_pool:
-        _db_pool.putconn(conn)
-    else:
-        conn.close()
+    return conn
 
 def init_db():
     """Inicializar la base de datos con las tablas necesarias."""
@@ -231,7 +194,7 @@ def init_db():
 
         conn.commit()
     finally:
-        return_db_to_pool(conn)
+        conn.close()
 
 def query_db(query, params=(), fetchone=False, commit=False):
     """Helper para ejecutar queries compatible con PostgreSQL y SQLite."""
@@ -268,8 +231,7 @@ def query_db(query, params=(), fetchone=False, commit=False):
                 return [serialize_row(dict(row)) for row in result]
         return [] if not fetchone else None
     finally:
-        # IMPORTANTE: Devolver conexión al pool en lugar de cerrarla
-        return_db_to_pool(conn)
+        conn.close()
 
 def serialize_row(row):
     """Convertir fechas y otros tipos a formato JSON serializable."""
@@ -515,8 +477,8 @@ def health_check():
     else:
         db_url_safe = db_url
 
-    # Verificar pool
-    pool_status = "initialized" if _db_pool else "not initialized"
+    # Verificar pool (siempre será false ahora sin pooling)
+    pool_status = "disabled (simple connections)"
 
     # Test de conexión
     try:
@@ -524,7 +486,7 @@ def health_check():
         cursor = conn.cursor()
         cursor.execute('SELECT 1')
         cursor.fetchone()
-        return_db_to_pool(conn)
+        conn.close()
         db_status = "connected"
     except Exception as e:
         db_status = f"error: {str(e)}"
