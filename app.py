@@ -29,9 +29,10 @@ def get_db_pool():
     if _db_pool is None and DATABASE_URL:
         from psycopg2 import pool
         try:
+            # Con 2 workers de Gunicorn: 2-5 conexiones por worker es suficiente
             _db_pool = pool.ThreadedConnectionPool(
                 minconn=1,
-                maxconn=10,  # Máximo 10 conexiones concurrentes
+                maxconn=5,  # 5 conexiones por worker (2 workers = 10 total max)
                 dsn=DATABASE_URL
             )
             print("Connection pool inicializado correctamente", flush=True)
@@ -464,6 +465,41 @@ def get_pagos():
     return jsonify(pagos)
 
 # ============ API MÉTRICAS ============
+
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    """Endpoint de diagnóstico para verificar configuración."""
+    db_url = os.environ.get('DATABASE_URL', 'Not set')
+
+    # Ocultar password
+    if db_url != 'Not set':
+        import re
+        db_url_safe = re.sub(r'://([^:]+):([^@]+)@', r'://\1:***@', db_url)
+    else:
+        db_url_safe = db_url
+
+    # Verificar pool
+    pool_status = "initialized" if _db_pool else "not initialized"
+
+    # Test de conexión
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute('SELECT 1')
+        cursor.fetchone()
+        return_db_to_pool(conn)
+        db_status = "connected"
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+
+    return jsonify({
+        'status': 'ok',
+        'database_url': db_url_safe,
+        'pool_status': pool_status,
+        'db_connection': db_status,
+        'workers': os.environ.get('WEB_CONCURRENCY', 'default'),
+        'port': os.environ.get('PORT', '5000')
+    })
 
 @app.route('/api/metricas', methods=['GET'])
 def get_metricas():
