@@ -588,6 +588,29 @@ const CalendarRenderer = {
             return;
         }
 
+        // Verificar si estamos viendo el día actual
+        const currentDate = CalendarState.get('currentDate');
+        const today = new Date();
+
+        // En vista día: solo mostrar si es hoy
+        if (viewMode === 'day') {
+            if (Utils.formatDate(currentDate) !== Utils.formatDate(today)) {
+                this.currentTimeIndicator.style.display = 'none';
+                return;
+            }
+        }
+
+        // En vista semana: solo mostrar si hoy está en la semana visible
+        if (viewMode === 'week') {
+            const weekStart = Utils.getWeekStart(currentDate);
+            const weekEnd = Utils.getWeekEnd(currentDate);
+
+            if (today < weekStart || today > weekEnd) {
+                this.currentTimeIndicator.style.display = 'none';
+                return;
+            }
+        }
+
         const topPercent = ((currentMinutes - dayStartMinutes) / totalMinutes) * 100;
         this.currentTimeIndicator.style.display = 'block';
         this.currentTimeIndicator.style.top = `${topPercent}%`;
