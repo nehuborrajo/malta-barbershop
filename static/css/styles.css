@@ -1064,7 +1064,7 @@ form .btn-primary {
     background: var(--parchment);
     position: sticky;
     top: 0;
-    z-index: 20;
+    z-index: 60; /* Mayor que current-time (50) para quedar por encima */
 }
 
 .cal__week-header-gutter {
