@@ -20,207 +20,255 @@ CORS(app)
 # Usar PostgreSQL en producción, SQLite en desarrollo
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
+# Connection pool para PostgreSQL (reutilizar conexiones)
+_db_pool = None
+
+def get_db_pool():
+    """Obtener o crear el connection pool de PostgreSQL."""
+    global _db_pool
+    if _db_pool is None and DATABASE_URL:
+        from psycopg2 import pool
+        try:
+            _db_pool = pool.ThreadedConnectionPool(
+                minconn=1,
+                maxconn=10,  # Máximo 10 conexiones concurrentes
+                dsn=DATABASE_URL
+            )
+            print("Connection pool inicializado correctamente", flush=True)
+        except Exception as e:
+            print(f"Error creando pool: {e}", flush=True)
+            raise
+    return _db_pool
+
 def get_db():
     """Obtener conexión a la base de datos."""
     if DATABASE_URL:
-        # PostgreSQL (producción)
+        # PostgreSQL con connection pooling
         import psycopg2
         from psycopg2.extras import RealDictCursor
-        conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+
+        pool = get_db_pool()
+        if pool:
+            conn = pool.getconn()
+            conn.cursor_factory = RealDictCursor
+            return conn
+        else:
+            # Fallback sin pool (no debería pasar)
+            conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+            return conn
     else:
         # SQLite (desarrollo local)
         import sqlite3
         conn = sqlite3.connect('barberia.db')
         conn.row_factory = sqlite3.Row
-    return conn
+        return conn
+
+def return_db_to_pool(conn):
+    """Devolver conexión al pool (solo para PostgreSQL)."""
+    if DATABASE_URL and _db_pool:
+        _db_pool.putconn(conn)
+    else:
+        conn.close()
 
 def init_db():
     """Inicializar la base de datos con las tablas necesarias."""
     conn = get_db()
     cursor = conn.cursor()
 
-    if DATABASE_URL:
-        # PostgreSQL
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS servicios (
-                id SERIAL PRIMARY KEY,
-                nombre TEXT NOT NULL UNIQUE,
-                precio REAL NOT NULL,
-                activo INTEGER DEFAULT 1
-            )
-        ''')
+    try:
+        if DATABASE_URL:
+            # PostgreSQL
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS servicios (
+                    id SERIAL PRIMARY KEY,
+                    nombre TEXT NOT NULL UNIQUE,
+                    precio REAL NOT NULL,
+                    activo INTEGER DEFAULT 1
+                )
+            ''')
 
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS turnos_fijos (
-                id SERIAL PRIMARY KEY,
-                nombre_cliente TEXT NOT NULL,
-                dia_semana INTEGER NOT NULL,
-                horario TEXT NOT NULL,
-                servicio_id INTEGER,
-                activo INTEGER DEFAULT 1,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (servicio_id) REFERENCES servicios(id)
-            )
-        ''')
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS turnos_fijos (
+                    id SERIAL PRIMARY KEY,
+                    nombre_cliente TEXT NOT NULL,
+                    dia_semana INTEGER NOT NULL,
+                    horario TEXT NOT NULL,
+                    servicio_id INTEGER,
+                    activo INTEGER DEFAULT 1,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (servicio_id) REFERENCES servicios(id)
+                )
+            ''')
 
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS turnos (
-                id SERIAL PRIMARY KEY,
-                fecha DATE NOT NULL,
-                horario TEXT NOT NULL,
-                nombre_cliente TEXT NOT NULL,
-                servicio_id INTEGER,
-                turno_fijo_id INTEGER,
-                duracion INTEGER DEFAULT 60,
-                estado TEXT DEFAULT 'pendiente',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (servicio_id) REFERENCES servicios(id),
-                FOREIGN KEY (turno_fijo_id) REFERENCES turnos_fijos(id)
-            )
-        ''')
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS turnos (
+                    id SERIAL PRIMARY KEY,
+                    fecha DATE NOT NULL,
+                    horario TEXT NOT NULL,
+                    nombre_cliente TEXT NOT NULL,
+                    servicio_id INTEGER,
+                    turno_fijo_id INTEGER,
+                    duracion INTEGER DEFAULT 60,
+                    estado TEXT DEFAULT 'pendiente',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (servicio_id) REFERENCES servicios(id),
+                    FOREIGN KEY (turno_fijo_id) REFERENCES turnos_fijos(id)
+                )
+            ''')
 
-        # Agregar columna duracion si no existe (para DBs existentes)
-        cursor.execute('''
-            DO $$
-            BEGIN
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                               WHERE table_name='turnos' AND column_name='duracion') THEN
-                    ALTER TABLE turnos ADD COLUMN duracion INTEGER DEFAULT 60;
-                END IF;
-            END $$;
-        ''')
+            # Agregar columna duracion si no existe (para DBs existentes)
+            cursor.execute('''
+                DO $$
+                BEGIN
+                    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                                   WHERE table_name='turnos' AND column_name='duracion') THEN
+                        ALTER TABLE turnos ADD COLUMN duracion INTEGER DEFAULT 60;
+                    END IF;
+                END $$;
+            ''')
 
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS pagos (
-                id SERIAL PRIMARY KEY,
-                turno_id INTEGER NOT NULL,
-                monto REAL NOT NULL,
-                medio_pago TEXT NOT NULL,
-                fecha_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (turno_id) REFERENCES turnos(id)
-            )
-        ''')
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS pagos (
+                    id SERIAL PRIMARY KEY,
+                    turno_id INTEGER NOT NULL,
+                    monto REAL NOT NULL,
+                    medio_pago TEXT NOT NULL,
+                    fecha_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (turno_id) REFERENCES turnos(id)
+                )
+            ''')
 
-        # Insertar servicios por defecto
-        servicios_default = [
-            ('Corte', 0),
-            ('Corte + Barba', 0),
-            ('Color', 0),
-            ('Personalizado', 0)
-        ]
-        for nombre, precio in servicios_default:
-            cursor.execute(
-                'INSERT INTO servicios (nombre, precio) VALUES (%s, %s) ON CONFLICT (nombre) DO NOTHING',
-                (nombre, precio)
-            )
-    else:
-        # SQLite (desarrollo)
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS servicios (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombre TEXT NOT NULL UNIQUE,
-                precio REAL NOT NULL,
-                activo INTEGER DEFAULT 1
-            )
-        ''')
+            # Insertar servicios por defecto
+            servicios_default = [
+                ('Corte', 0),
+                ('Corte + Barba', 0),
+                ('Color', 0),
+                ('Personalizado', 0)
+            ]
+            for nombre, precio in servicios_default:
+                cursor.execute(
+                    'INSERT INTO servicios (nombre, precio) VALUES (%s, %s) ON CONFLICT (nombre) DO NOTHING',
+                    (nombre, precio)
+                )
 
-        servicios_default = [
-            ('Corte', 0),
-            ('Corte + Barba', 0),
-            ('Color', 0),
-            ('Personalizado', 0)
-        ]
-        for nombre, precio in servicios_default:
-            cursor.execute(
-                'INSERT OR IGNORE INTO servicios (nombre, precio) VALUES (?, ?)',
-                (nombre, precio)
-            )
+            # Crear índices para mejorar performance
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_turnos_fecha ON turnos(fecha)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_turnos_estado ON turnos(estado)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_pagos_fecha ON pagos(fecha_hora)')
+        else:
+            # SQLite (desarrollo)
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS servicios (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    nombre TEXT NOT NULL UNIQUE,
+                    precio REAL NOT NULL,
+                    activo INTEGER DEFAULT 1
+                )
+            ''')
 
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS turnos_fijos (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombre_cliente TEXT NOT NULL,
-                dia_semana INTEGER NOT NULL,
-                horario TEXT NOT NULL,
-                servicio_id INTEGER,
-                activo INTEGER DEFAULT 1,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (servicio_id) REFERENCES servicios(id)
-            )
-        ''')
+            servicios_default = [
+                ('Corte', 0),
+                ('Corte + Barba', 0),
+                ('Color', 0),
+                ('Personalizado', 0)
+            ]
+            for nombre, precio in servicios_default:
+                cursor.execute(
+                    'INSERT OR IGNORE INTO servicios (nombre, precio) VALUES (?, ?)',
+                    (nombre, precio)
+                )
 
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS turnos (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                fecha DATE NOT NULL,
-                horario TEXT NOT NULL,
-                nombre_cliente TEXT NOT NULL,
-                servicio_id INTEGER,
-                turno_fijo_id INTEGER,
-                duracion INTEGER DEFAULT 60,
-                estado TEXT DEFAULT 'pendiente',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (servicio_id) REFERENCES servicios(id),
-                FOREIGN KEY (turno_fijo_id) REFERENCES turnos_fijos(id)
-            )
-        ''')
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS turnos_fijos (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    nombre_cliente TEXT NOT NULL,
+                    dia_semana INTEGER NOT NULL,
+                    horario TEXT NOT NULL,
+                    servicio_id INTEGER,
+                    activo INTEGER DEFAULT 1,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (servicio_id) REFERENCES servicios(id)
+                )
+            ''')
 
-        # Agregar columna duracion si no existe (para DBs existentes)
-        try:
-            cursor.execute('ALTER TABLE turnos ADD COLUMN duracion INTEGER DEFAULT 60')
-        except:
-            pass
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS turnos (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    fecha DATE NOT NULL,
+                    horario TEXT NOT NULL,
+                    nombre_cliente TEXT NOT NULL,
+                    servicio_id INTEGER,
+                    turno_fijo_id INTEGER,
+                    duracion INTEGER DEFAULT 60,
+                    estado TEXT DEFAULT 'pendiente',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (servicio_id) REFERENCES servicios(id),
+                    FOREIGN KEY (turno_fijo_id) REFERENCES turnos_fijos(id)
+                )
+            ''')
 
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS pagos (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                turno_id INTEGER NOT NULL,
-                monto REAL NOT NULL,
-                medio_pago TEXT NOT NULL,
-                fecha_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (turno_id) REFERENCES turnos(id)
-            )
-        ''')
+            # Agregar columna duracion si no existe (para DBs existentes)
+            try:
+                cursor.execute('ALTER TABLE turnos ADD COLUMN duracion INTEGER DEFAULT 60')
+            except:
+                pass
 
-    conn.commit()
-    conn.close()
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS pagos (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    turno_id INTEGER NOT NULL,
+                    monto REAL NOT NULL,
+                    medio_pago TEXT NOT NULL,
+                    fecha_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (turno_id) REFERENCES turnos(id)
+                )
+            ''')
+
+            # Crear índices
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_turnos_fecha ON turnos(fecha)')
+            cursor.execute('CREATE INDEX IF NOT EXISTS idx_turnos_estado ON turnos(estado)')
+
+        conn.commit()
+    finally:
+        return_db_to_pool(conn)
 
 def query_db(query, params=(), fetchone=False, commit=False):
     """Helper para ejecutar queries compatible con PostgreSQL y SQLite."""
     conn = get_db()
     cursor = conn.cursor()
 
-    # Convertir placeholders de SQLite (?) a PostgreSQL (%s)
-    if DATABASE_URL:
-        query = query.replace('?', '%s')
+    try:
+        # Convertir placeholders de SQLite (?) a PostgreSQL (%s)
+        if DATABASE_URL:
+            query = query.replace('?', '%s')
 
-    cursor.execute(query, params)
+        cursor.execute(query, params)
 
-    if commit:
-        conn.commit()
-        lastrowid = cursor.lastrowid if hasattr(cursor, 'lastrowid') else None
-        # Para PostgreSQL, obtener el último ID insertado
-        if DATABASE_URL and lastrowid is None and 'INSERT' in query.upper():
-            cursor.execute('SELECT lastval()')
-            result = cursor.fetchone()
-            lastrowid = result['lastval'] if result else None
-        conn.close()
-        return lastrowid
+        if commit:
+            conn.commit()
+            lastrowid = cursor.lastrowid if hasattr(cursor, 'lastrowid') else None
+            # Para PostgreSQL, obtener el último ID insertado
+            if DATABASE_URL and lastrowid is None and 'INSERT' in query.upper():
+                cursor.execute('SELECT lastval()')
+                result = cursor.fetchone()
+                lastrowid = result['lastval'] if result else None
+            return lastrowid
 
-    if fetchone:
-        result = cursor.fetchone()
-    else:
-        result = cursor.fetchall()
-
-    conn.close()
-
-    # Convertir a dict para compatibilidad
-    if result:
         if fetchone:
-            return serialize_row(dict(result))
+            result = cursor.fetchone()
         else:
-            return [serialize_row(dict(row)) for row in result]
-    return [] if not fetchone else None
+            result = cursor.fetchall()
+
+        # Convertir a dict para compatibilidad
+        if result:
+            if fetchone:
+                return serialize_row(dict(result))
+            else:
+                return [serialize_row(dict(row)) for row in result]
+        return [] if not fetchone else None
+    finally:
+        # IMPORTANTE: Devolver conexión al pool en lugar de cerrarla
+        return_db_to_pool(conn)
 
 def serialize_row(row):
     """Convertir fechas y otros tipos a formato JSON serializable."""
