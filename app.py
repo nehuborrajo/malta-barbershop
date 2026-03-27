@@ -410,29 +410,66 @@ def generar_turnos_semana():
     data = request.json
     fecha_inicio = datetime.strptime(data['fecha_inicio'], '%Y-%m-%d')
 
+    # Query única para obtener todos los turnos fijos activos
     turnos_fijos = query_db('SELECT * FROM turnos_fijos WHERE activo = 1')
 
-    turnos_creados = 0
+    if not turnos_fijos:
+        return jsonify({'message': '0 turnos generados'})
+
+    # Preparar batch de turnos a crear
+    turnos_a_crear = []
     for tf in turnos_fijos:
         dias_diferencia = (tf['dia_semana'] - fecha_inicio.weekday()) % 7
         fecha_turno = fecha_inicio + timedelta(days=dias_diferencia)
         fecha_str = fecha_turno.strftime('%Y-%m-%d')
 
-        existe = query_db(
-            'SELECT id FROM turnos WHERE fecha = ? AND horario = ? AND turno_fijo_id = ?',
-            (fecha_str, tf['horario'], tf['id']),
-            fetchone=True
-        )
+        turnos_a_crear.append({
+            'fecha': fecha_str,
+            'horario': tf['horario'],
+            'nombre_cliente': tf['nombre_cliente'],
+            'servicio_id': tf['servicio_id'],
+            'turno_fijo_id': tf['id']
+        })
 
-        if not existe:
-            query_db(
-                'INSERT INTO turnos (fecha, horario, nombre_cliente, servicio_id, turno_fijo_id, estado) VALUES (?, ?, ?, ?, ?, ?)',
-                (fecha_str, tf['horario'], tf['nombre_cliente'], tf['servicio_id'], tf['id'], 'pendiente'),
-                commit=True
-            )
-            turnos_creados += 1
+    # Query única para verificar turnos existentes (bulk check)
+    if turnos_a_crear:
+        placeholders = ','.join(['(?, ?, ?)' for _ in turnos_a_crear])
+        check_params = []
+        for t in turnos_a_crear:
+            check_params.extend([t['fecha'], t['horario'], t['turno_fijo_id']])
 
-    return jsonify({'message': f'{turnos_creados} turnos generados'})
+        query = f'''
+            SELECT fecha, horario, turno_fijo_id
+            FROM turnos
+            WHERE (fecha, horario, turno_fijo_id) IN ({placeholders})
+        '''
+
+        existentes = query_db(query, tuple(check_params))
+        existentes_set = {(e['fecha'], e['horario'], e['turno_fijo_id']) for e in existentes}
+
+        # Insertar solo los que no existen (batch insert)
+        nuevos = [t for t in turnos_a_crear
+                  if (t['fecha'], t['horario'], t['turno_fijo_id']) not in existentes_set]
+
+        if nuevos:
+            # Batch insert - múltiples values en un solo INSERT
+            values_placeholders = ','.join(['(?, ?, ?, ?, ?, ?)' for _ in nuevos])
+            insert_params = []
+            for t in nuevos:
+                insert_params.extend([
+                    t['fecha'], t['horario'], t['nombre_cliente'],
+                    t['servicio_id'], t['turno_fijo_id'], 'pendiente'
+                ])
+
+            query = f'''
+                INSERT INTO turnos (fecha, horario, nombre_cliente, servicio_id, turno_fijo_id, estado)
+                VALUES {values_placeholders}
+            '''
+            query_db(query, tuple(insert_params), commit=True)
+
+            return jsonify({'message': f'{len(nuevos)} turnos generados'})
+
+    return jsonify({'message': '0 turnos generados'})
 
 # ============ API PAGOS ============
 

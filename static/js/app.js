@@ -1169,8 +1169,19 @@ const CalendarApp = {
             fechaFin = Utils.formatDate(Utils.addDays(weekStart, showSunday ? 6 : 5));
         }
 
-        // Generate turnos from fijos
-        await API.generarTurnosSemana(fechaInicio);
+        // Generate turnos only once per day (cache in sessionStorage)
+        const today = Utils.formatDate(new Date());
+        const lastGenerated = sessionStorage.getItem('lastTurnosGenerated');
+
+        if (lastGenerated !== today) {
+            try {
+                await API.generarTurnosSemana(fechaInicio);
+                sessionStorage.setItem('lastTurnosGenerated', today);
+            } catch (error) {
+                console.error('Error generating turnos:', error);
+                // Continue anyway to show existing turnos
+            }
+        }
 
         // Load events
         const events = await API.getTurnos(fechaInicio, fechaFin);
